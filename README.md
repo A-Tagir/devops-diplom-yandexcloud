@@ -13,12 +13,56 @@
 ---
 ## Этапы выполнения:
 
-### Создание облачной инфраструктуры
-
 * Работа выполняется на виртуальной машине  Ubuntu 22.04.5 LTS созданной на рабочей станции Windows 10 Pro в среде Hyper-V.
 * Версии ПО: Terraform v1.8.4, Python 3.10.12, kubectl Version: v1.32.3, Docker version 28.0.1, Yandex Cloud CLI 0.152.0,
-  git version 2.34.1,  helm Version:v3.17.3
-* 
+  git version 2.34.1,  helm Version:v3.17.3, TFLint version 0.58.0
+
+### Создание облачной инфраструктуры
+
+* Создаю KMS ключ и сервисный аккаунт для шифрования бакета и доступа к бакету:
+
+[keys.tf](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/backend/keys.tf)
+
+* Создаю зашифрованный бакет, в котором будет хранится tfstate проекта:
+
+[bucket.tf](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/backend/bucket.tf)
+
+* Поскольку ключи доступа к бакету terraform запрещает передавать в переменных, то мы их экспортируем в рабочее окружение.
+* Файлы tf для создания бекенда помещаем в папку backend отдельную от основного проекта. Делаю это по той причине,
+  что backet s3 размером до 1GB входит в free tire и за него не будет списываться оплата. Я могу созданный бекенда
+  защитить от удаления и оставить на весь период работы с проектом. Основной же проект может удаляться и создаваться многократно.
+
+[backend](https://github.com/A-Tagir/devops-diplom-yandexcloud/tree/main/backend)
+
+* Применяю:
+  
+```
+yc iam create-token
+
+tiger@VM1:~/Diploma/backend$ terraform init
+
+Initializing the backend...
+
+Initializing provider plugins...
+- Reusing previous version of yandex-cloud/yandex from the dependency lock file
+- Using previously-installed yandex-cloud/yandex v0.145.0
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+
+terraform apply -var "token=t1.XXXXX"
+```
+* Необходимые объекты создались:
+
+
+
 
 
 
