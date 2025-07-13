@@ -28,6 +28,7 @@
 [bucket.tf](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/backend/bucket.tf)
 
 * Поскольку ключи доступа к бакету terraform запрещает передавать в переменных, то мы их экспортируем в рабочее окружение.
+* не забываю добавить файл backend.tfvars содержащий секретные ключи в .gitignore
 * Файлы tf для создания бекенда помещаем в папку backend отдельную от основного проекта. Делаю это по той причине,
   что backet s3 размером до 1GB входит в free tire и за него не будет списываться оплата. Я могу созданный бекенда
   защитить от удаления и оставить на весь период работы с проектом. Основной же проект может удаляться и создаваться многократно.
@@ -61,33 +62,40 @@ terraform apply -var "token=t1.XXXXX"
 ```
 * Необходимые объекты создались:
 
+![backend_created](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_backend_created.png)
 
+![backend_accounts](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_backend_accounts.png)
 
+* Хочу отметить, что tfstate бекенда храню локально и не буду переносить в бакет, поскольку он достаточно небольшой.
+* Теперь переходим в папку основного проекта main и там конфигурируем backend:
 
+[backend.tf](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/main/backend.tf)
 
+* Инициализирую:
 
-Для начала необходимо подготовить облачную инфраструктуру в ЯО при помощи [Terraform](https://www.terraform.io/).
+[main_initialized](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_main_initialized.png)
 
-Особенности выполнения:
+* Бекенд создан и стейт основного проекта теперь хранится в хранилище s3 облака, зашифрован и защищен от удаления.
 
-- Бюджет купона ограничен, что следует иметь в виду при проектировании инфраструктуры и использовании ресурсов;
-Для облачного k8s используйте региональный мастер(неотказоустойчивый). Для self-hosted k8s минимизируйте ресурсы ВМ и долю ЦПУ. В обоих вариантах используйте прерываемые ВМ для worker nodes.
+* Создаю VPC и подсети: 3 подсети с названием private и 3 подсети с названием public в разных зонах:
 
-Предварительная подготовка к установке и запуску Kubernetes кластера.
+[network.tf](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/main/network.tf)
 
-1. Создайте сервисный аккаунт, который будет в дальнейшем использоваться Terraform для работы с инфраструктурой с необходимыми и достаточными правами. Не стоит использовать права суперпользователя
-2. Подготовьте [backend](https://developer.hashicorp.com/terraform/language/backend) для Terraform:  
-   а. Рекомендуемый вариант: S3 bucket в созданном ЯО аккаунте(создание бакета через TF)
-   б. Альтернативный вариант:  [Terraform Cloud](https://app.terraform.io/)
-3. Создайте конфигурацию Terrafrom, используя созданный бакет ранее как бекенд для хранения стейт файла. Конфигурации Terraform для создания сервисного аккаунта и бакета и основной инфраструктуры следует сохранить в разных папках.
-4. Создайте VPC с подсетями в разных зонах доступности.
-5. Убедитесь, что теперь вы можете выполнить команды `terraform destroy` и `terraform apply` без дополнительных ручных действий.
-6. В случае использования [Terraform Cloud](https://app.terraform.io/) в качестве [backend](https://developer.hashicorp.com/terraform/language/backend) убедитесь, что применение изменений успешно проходит, используя web-интерфейс Terraform cloud.
+* Инициализирую:
 
-Ожидаемые результаты:
+![main_vpc_init](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_main_vpc_init.png)
 
-1. Terraform сконфигурирован и создание инфраструктуры посредством Terraform возможно без дополнительных ручных действий, стейт основной конфигурации сохраняется в бакете или Terraform Cloud
-2. Полученная конфигурация инфраструктуры является предварительной, поэтому в ходе дальнейшего выполнения задания возможны изменения.
+* Применяю:
+
+[main_vpc_apply](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_main_vpc_apply.png)
+
+* Удаляю:
+
+[main_vpc_destroy](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_main_vpc_destroy.png)
+
+* Видим, что все работает корректно. Кроме того, видим, что tfstate хранится в облаке и меняется в процессе:
+
+![main_vpc_tfstate](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_main_vpc_tfstate.png)
 
 ---
 ### Создание Kubernetes кластера
