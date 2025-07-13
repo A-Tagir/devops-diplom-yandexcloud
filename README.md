@@ -66,7 +66,7 @@ terraform apply -var "token=t1.XXXXX"
 
 ![backend_accounts](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_backend_accounts.png)
 
-* Хочу отметить, что tfstate бекенда храню локально и не буду переносить в бакет, поскольку он достаточно небольшой.
+* Хочу отметить, что tfstate бекенда храню локально и не буду переносить в бакет, поскольку стейт содержит немного объектов и его потеря не станет критичной.
 * Теперь переходим в папку основного проекта main и там конфигурируем backend:
 
 [backend.tf](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/main/backend.tf)
