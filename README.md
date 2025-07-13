@@ -73,7 +73,7 @@ terraform apply -var "token=t1.XXXXX"
 
 * Инициализирую:
 
-[main_initialized](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_main_initialized.png)
+![main_initialized](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_main_initialized.png)
 
 * Бекенд создан и стейт основного проекта теперь хранится в хранилище s3 облака, зашифрован и защищен от удаления.
 
