@@ -87,11 +87,11 @@ terraform apply -var "token=t1.XXXXX"
 
 * Применяю:
 
-[main_vpc_apply](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_main_vpc_apply.png)
+![main_vpc_apply](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_main_vpc_apply.png)
 
 * Удаляю:
 
-[main_vpc_destroy](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_main_vpc_destroy.png)
+![main_vpc_destroy](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_main_vpc_destroy.png)
 
 * Видим, что все работает корректно. Кроме того, видим, что tfstate хранится в облаке и меняется в процессе:
 
