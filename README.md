@@ -117,7 +117,7 @@ terraform apply -var "token=t1.XXXXX"
 
 * Проверяю tflint, применяю: terraform apply -var "token=XXX"
 
-[nodes have been applied](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_nodes_apply.png)
+![nodes have been applied](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_nodes_apply.png)
 
 * Далее клонируем kubespray на мастер:
 * 
