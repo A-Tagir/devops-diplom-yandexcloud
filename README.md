@@ -103,19 +103,26 @@ terraform apply -var "token=t1.XXXXX"
 * K8s кластер буду развертывать самостоятельно, с помощью  kubespray. У меня есть опыт развертывания с помощью kubespray из заданий курса, воспользуюсь им.
   Для экономии ресурсов разверну один мастер в зоне ru-central1-a и две вокер-ноды в зонах ru-central1-a и ru-central1-b.
 
-* Для этого подготовлю 3 виртуальные машины:
+* Для этого подготовлю 3 виртуальные машины. В процессе использую циклы, которые изучали в блоке про терраформ. Для удобства,
+  все что касается развертывания машин поместил в файл k8s.tf, в том числе и outputs. Кроме того, в файле cloud-init.yml
+  указал установку ПО, которое будет нужно при развертывании и диагностики кластера с kubespray.
+  Выбран, уже привычный для меня Ubuntu 22.04.5, core fraction 20, RAM 4, CPU 2, HDD 20. С такими параметрами не возникало трудностей
+  в предыдущих заданиях. Правила безопасности, пока, разрешено все. Позднее сделаю тонкую настройку.
 
-[]()
+[k8s.tf](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/main/k8s.tf)
 
-Это можно сделать двумя способами:
+[cloud-init.yml](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/main/cloud-init.yml)
 
-1. Рекомендуемый вариант: самостоятельная установка Kubernetes кластера.  
-   а. При помощи Terraform подготовить как минимум 3 виртуальных машины Compute Cloud для создания Kubernetes-кластера. Тип виртуальной машины следует выбрать самостоятельно с учётом требовании к производительности и стоимости. Если в дальнейшем поймете, что необходимо сменить тип инстанса, используйте Terraform для внесения изменений.  
-   б. Подготовить [ansible](https://www.ansible.com/) конфигурации, можно воспользоваться, например [Kubespray](https://kubernetes.io/docs/setup/production-environment/tools/kubespray/)  
-   в. Задеплоить Kubernetes на подготовленные ранее инстансы, в случае нехватки каких-либо ресурсов вы всегда можете создать их при помощи Terraform.
-2. Альтернативный вариант: воспользуйтесь сервисом [Yandex Managed Service for Kubernetes](https://cloud.yandex.ru/services/managed-kubernetes)  
-  а. С помощью terraform resource для [kubernetes](https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/kubernetes_cluster) создать **региональный** мастер kubernetes с размещением нод в разных 3 подсетях      
-  б. С помощью terraform resource для [kubernetes node group](https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/kubernetes_node_group)
+[variables.tf](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/main/variables.tf)
+
+* Проверяю tflint, применяю: terraform apply -var "token=XXX"
+
+[nodes have been applied](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_nodes_apply.png)
+
+* Далее клонируем kubespray на мастер:
+* 
+
+
   
 Ожидаемый результат:
 
