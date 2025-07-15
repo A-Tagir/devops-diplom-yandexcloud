@@ -4,6 +4,10 @@ terraform {
       source = "yandex-cloud/yandex"
       version = ">= 0.145.0"
     }
+    template = {
+      source  = "hashicorp/template"
+      version = "~> 2.2.0"
+    }
   }
   required_version = "~>1.5"
 }
