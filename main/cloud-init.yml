@@ -8,12 +8,5 @@ users:
            - ${ssh_public_key}
 package_update: true
 package_upgrade: false
-packages:
-  - vim
-  - mc
-  - net-tools
-  - bind9utils
-  - pip
-  - python3-netaddr
-  - git
-  - curl
+
+
