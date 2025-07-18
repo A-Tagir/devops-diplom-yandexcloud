@@ -91,12 +91,12 @@ resource "null_resource" "kubespray_inventory" {
       "sudo -u ${var.vm_username} cp -r /home/${var.vm_username}/kubespray/inventory/sample/group_vars /home/${var.vm_username}/kubespray/inventory/mycluster/",
       "cat <<EOF > /home/${var.vm_username}/kubespray/inventory/mycluster/inventory.ini",
       "[kube_control_plane]",
-      "node1 ansible_host=${yandex_compute_instance.k8s["0"].network_interface[0].nat_ip_address} #ip=${yandex_compute_instance.k8s["0"].network_interface[0].ip_address} etcd_member_name=etcd1",
+      "node1 ansible_host=${yandex_compute_instance.k8s["0"].network_interface[0].ip_address} #ip=${yandex_compute_instance.k8s["0"].network_interface[0].ip_address} etcd_member_name=etcd1",
       "[etcd:children]",
       "kube_control_plane",
       "[kube_node]",
-      "node2 ansible_host=${yandex_compute_instance.k8s["1"].network_interface[0].nat_ip_address} #ip=${yandex_compute_instance.k8s["1"].network_interface[0].ip_address}",
-      "node3 ansible_host=${yandex_compute_instance.k8s["2"].network_interface[0].nat_ip_address} #ip=${yandex_compute_instance.k8s["2"].network_interface[0].ip_address}",
+      "node2 ansible_host=${yandex_compute_instance.k8s["1"].network_interface[0].ip_address} #ip=${yandex_compute_instance.k8s["1"].network_interface[0].ip_address}",
+      "node3 ansible_host=${yandex_compute_instance.k8s["2"].network_interface[0].ip_address} #ip=${yandex_compute_instance.k8s["2"].network_interface[0].ip_address}",
       "EOF",
       # Ждем завершения копирования
       "sync",
@@ -166,13 +166,13 @@ resource "yandex_vpc_security_group" "k8s" {
   ingress {
     protocol       = "TCP"
     port           = 22
-    v4_cidr_blocks = ["0.0.0.0/0"]
+    v4_cidr_blocks = [ "10.0.20.0/24", "10.0.21.0/24", var.my_ip ]
   }
 
   ingress {
     protocol       = "TCP"
     port           = 6443
-    v4_cidr_blocks = ["0.0.0.0/0"]
+    v4_cidr_blocks = [ "10.0.20.0/24", "10.0.21.0/24", var.my_ip ]
   }
 
   egress {
