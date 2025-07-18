@@ -125,6 +125,7 @@ terraform apply -var "token=t1.XXXXX"
   - применяется модуль resource "null_resource" с depends, когда необходимо ждать, чтобы другие ресурсы были созданы и известны результаты (например, ip адрес).
   - Так же, копируем на удаленной машине cp /etc/kubernetes/admin.conf /tmp/admin.conf, а затем копируем на мою локальную машину, не забыв удалить из tmp директории.
   - После завершения работы terraform, остается только скопировать полученный файл admin.conf в папку .kube и заменить 127.0.0.1 на публичный IP мастер-ноды.
+  - В networks.tf удаляю неиспользуемые сети.
   
 * Плюсы данной схемы установки:
   - Все выполняется автоматически, ручных операций нет.
@@ -133,17 +134,29 @@ terraform apply -var "token=t1.XXXXX"
   - Долгое выполнение (около 25 минут) и, соответственно, долгая отладка.
   - приватный ключ передается на мастер-ноду.
   - пока в правилах security-group "разрешено все".
+* Итоговый код здесь:
+
+[project](https://github.com/A-Tagir/devops-diplom-yandexcloud/tree/main/main)
+
 * Применяем:
 
-![]()
+![cluster_creating](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_cluster_creating.png)
 
+* Кусок с результатами выполнения ansible-playbook:
 
-  
-Ожидаемый результат:
+![cluster_kubespray](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_cluster_kubespray.png)
 
-1. Работоспособный Kubernetes кластер.
-2. В файле `~/.kube/config` находятся данные для доступа к кластеру.
-3. Команда `kubectl get pods --all-namespaces` отрабатывает без ошибок.
+* Выполнение завершено:
+
+![cluster_been_created](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_cluster_been_created.png)
+
+* Проверяем работу кластера:
+
+![k8s_cluster_OK](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_cluster_OK.png)
+
+* Видим, что ноды работают, служебные pod-ы запущены и без ошибок.
+
+* Теперь отлаживаю безопасность в security group.
 
 ---
 ### Создание тестового приложения
