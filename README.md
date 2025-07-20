@@ -136,7 +136,7 @@ terraform apply -var "token=t1.XXXXX"
   - пока в правилах security-group "разрешено все".
 * Итоговый код здесь:
 
-[project](https://github.com/A-Tagir/devops-diplom-yandexcloud/tree/main/main)
+[project](https://github.com/netology-code/devops-diplom-yandexcloud/tree/64bae9d9152a4130f38466c800c521d4f57e117d)
 
 * Применяем:
 
