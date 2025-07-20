@@ -187,20 +187,97 @@ ingress {
 
 ### Создание тестового приложения
 
-Для перехода к следующему этапу необходимо подготовить тестовое приложение, эмулирующее основное приложение разрабатываемое вашей компанией.
+* Создаю приложение, которое выдает статическую страницу, создаю Deploy и service типа NodePort для доступа к приложению из сети интернет
 
-Способ подготовки:
+[devops-diplom-application](https://github.com/A-Tagir/devops-diplom-application)
 
-1. Рекомендуемый вариант:  
-   а. Создайте отдельный git репозиторий с простым nginx конфигом, который будет отдавать статические данные.  
-   б. Подготовьте Dockerfile для создания образа приложения.  
-2. Альтернативный вариант:  
-   а. Используйте любой другой код, главное, чтобы был самостоятельно создан Dockerfile.
+* Собираю приложение и логинюсь в dockerhub:
 
-Ожидаемый результат:
+![AppDockerHubLogin](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_AppDockerHubLogin.png)
 
-1. Git репозиторий с тестовым приложением и Dockerfile.
-2. Регистри с собранным docker image. В качестве регистри может быть DockerHub или [Yandex Container Registry](https://cloud.yandex.ru/services/container-registry), созданный также с помощью terraform.
+* Отправляю собранный образ в dockerhub:
+
+![AppDockerHubPushed.](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_AppDockerHubPushed.png)
+
+* Проверяю, что образ появился:
+
+![AppDockerHubImage](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_AppDockerHubImage.png)
+
+* Пробуем продеплоить приложение в кластер, чтобы убедиться, что он рабочий:
+
+![AppDockerContainerCreating](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_AppDockerContainerCreating.png)
+
+* Пробуем посмотреть логи контейнера:
+
+```
+tiger@VM1:~/Diploma/main$ kubectl logs devcats-deployment-7d5f67f4b-p7vrl
+Error from server: Get "https://10.0.20.19:10250/containerLogs/default/devcats-deployment-7d5f         67f4b-p7vrl/devcats": dial tcp 10.0.20.19:10250: i/o timeout
+```
+
+* Модифицируем security group для разрешения всего трафика внутри кластера, а также, к порту TCP 30001 с моей рабочей станции:
+
+```
+resource "yandex_vpc_security_group" "k8s" {
+  name        = "k8s-security-group"
+  network_id  = yandex_vpc_network.cloud-netology.id
+
+  ingress {
+    protocol       = "TCP"
+    port           = 22
+    v4_cidr_blocks = [ "10.0.20.0/24", "10.0.21.0/24", var.my_ip ]
+  }
+
+  ingress {
+    protocol       = "ANY"
+    v4_cidr_blocks = [ "10.0.20.0/24", "10.0.21.0/24" ]
+  }
+
+  ingress {
+    protocol       = "TCP"
+    port           = 30001
+    v4_cidr_blocks = [ var.my_ip ]
+  }
+
+  ingress {
+    protocol       = "TCP"
+    port           = 6443
+    v4_cidr_blocks = [ "10.0.20.0/24", "10.0.21.0/24", var.my_ip ]
+  }
+
+  egress {
+    protocol       = "ANY"
+    from_port      = 0
+    to_port        = 65535
+    v4_cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+```
+
+* Применяем:
+
+![AppSecurityGroupModified](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_AppSecurityGroupModified.png)
+
+* Проверяем логи и видим, что кластер теперь работает корректно:
+
+![AppK8Slogs](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_AppK8Slogs.png)
+
+* Применяем сервис типа NodePort:
+
+```
+tiger@VM1:~/DiplomaApp$ kubectl apply -f devcats-service.yaml
+service/netology-devcats created
+tiger@VM1:~/DiplomaApp$ kubectl get svc
+NAME               TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE
+kubernetes         ClusterIP   10.233.0.1    <none>        443/TCP        33m
+netology-devcats   NodePort    10.233.1.22   <none>        80:30001/TCP   3s
+tiger@VM1:~/DiplomaApp$
+```
+* Проверяем доступ:
+
+![k8s_AppOk](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_AppOk.png)
+
+* На этом считаем, что кластер работает корректно и приложение создано. Приступаем к следующему этапу.
 
 ---
 ### Подготовка cистемы мониторинга и деплой приложения
