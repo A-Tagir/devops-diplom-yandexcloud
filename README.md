@@ -211,7 +211,8 @@ ingress {
 
 ```
 tiger@VM1:~/Diploma/main$ kubectl logs devcats-deployment-7d5f67f4b-p7vrl
-Error from server: Get "https://10.0.20.19:10250/containerLogs/default/devcats-deployment-7d5f         67f4b-p7vrl/devcats": dial tcp 10.0.20.19:10250: i/o timeout
+Error from server: Get "https://10.0.20.19:10250/containerLogs/default/devcats-deployment-7d5f67f4b-p7vrl/devcats":
+dial tcp 10.0.20.19:10250: i/o timeout
 ```
 
 * Модифицируем security group для разрешения всего трафика внутри кластера, а также, к порту TCP 30001 с моей рабочей станции:
