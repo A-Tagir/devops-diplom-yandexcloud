@@ -283,6 +283,15 @@ tiger@VM1:~/DiplomaApp$
 ---
 ### Подготовка cистемы мониторинга и деплой приложения
 
+* Выбираю установку системы мониторинга через helm-chart:
+
+```
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n monitoring --create-namespace
+```
+* Устанавливаю:
+
 Уже должны быть готовы конфигурации для автоматического создания облачной инфраструктуры и поднятия Kubernetes кластера.  
 Теперь необходимо подготовить конфигурационные файлы для настройки нашего Kubernetes кластера.
 
