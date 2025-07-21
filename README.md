@@ -283,26 +283,38 @@ tiger@VM1:~/DiplomaApp$
 ---
 ### Подготовка cистемы мониторинга и деплой приложения
 
-* Выбираю установку системы мониторинга через helm-chart:
+* Выбираю установку системы мониторинга через helm-chart. Готовлю базовый манифест:
+
+[monitoring_values.yaml](https://github.com/A-Tagir/devops-diplom-application/blob/main/monitoring_values.yaml)
 
 ```
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
-helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n monitoring --create-namespace
+helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n monitoring --create-namespace -f monitoring_values.yaml
 ```
 * Устанавливаю:
 
-Уже должны быть готовы конфигурации для автоматического создания облачной инфраструктуры и поднятия Kubernetes кластера.  
-Теперь необходимо подготовить конфигурационные файлы для настройки нашего Kubernetes кластера.
+![MonitoringInstalledWithHelm](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_MonitoringInstalledWithHelm.png)
 
-Цель:
-1. Задеплоить в кластер [prometheus](https://prometheus.io/), [grafana](https://grafana.com/), [alertmanager](https://github.com/prometheus/alertmanager), [экспортер](https://github.com/prometheus/node_exporter) основных метрик Kubernetes.
-2. Задеплоить тестовое приложение, например, [nginx](https://www.nginx.com/) сервер отдающий статическую страницу.
+* Подключаюсь
 
-Способ выполнения:
-1. Воспользоваться пакетом [kube-prometheus](https://github.com/prometheus-operator/kube-prometheus), который уже включает в себя [Kubernetes оператор](https://operatorhub.io/) для [grafana](https://grafana.com/), [prometheus](https://prometheus.io/), [alertmanager](https://github.com/prometheus/alertmanager) и [node_exporter](https://github.com/prometheus/node_exporter). Альтернативный вариант - использовать набор helm чартов от [bitnami](https://github.com/bitnami/charts/tree/main/bitnami).
+![MonitoringGrafanaLogin](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_MonitoringGrafanaLogin.png)
+
+* Видим, что Дашборды, которые я добавил в конфиге есть:
+
+![MonitoringDashboards](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_MonitoringDashboards.png)
+
+* Метрики нод отображаются:
+
+![NodesMetrics](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_MonitoringDashboard.png)
+
+* Мониторинг установлен, приложение задеплоено.
 
 ### Деплой инфраструктуры в terraform pipeline
+
+* Поскольку я на первом этапе не настроил автоматический деплой конфигурации терраформ, то буду делать это сейчас.
+
+
 
 1. Если на первом этапе вы не воспользовались [Terraform Cloud](https://app.terraform.io/), то задеплойте и настройте в кластере [atlantis](https://www.runatlantis.io/) для отслеживания изменений инфраструктуры. Альтернативный вариант 3 задания: вместо Terraform Cloud или atlantis настройте на автоматический запуск и применение конфигурации terraform из вашего git-репозитория в выбранной вами CI-CD системе при любом комите в main ветку. Предоставьте скриншоты работы пайплайна из CI/CD системы.
 
