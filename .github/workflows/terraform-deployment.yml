@@ -71,4 +71,4 @@ jobs:
 
     - name: Terraform Destroy (Manual Trigger)
       if: github.event_name == 'workflow_dispatch' && github.event.inputs.destroy == 'true'
-      run: terraform -chdir=./main destroy -input=false -auto-approve
+      run: terraform -chdir=./main destroy -var="token=${{ secrets.YC_TOKEN }}" input=false -auto-approve
