@@ -70,7 +70,19 @@ jobs:
       if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
       run: terraform -chdir=./main apply -input=false -auto-approve tfplan
 
+    - name: Copy kubeconfig
+      run: |
+        mkdir -p ./kubeconfig-artifact
+        cp ./main/admin.conf ./kubeconfig-artifact/kubeconfig || echo "kubeconfig not found"
+      continue-on-error: true
+
+    - name: Upload kubeconfig artifact
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: kubeconfig
+        path: ./kubeconfig-artifact/kubeconfig
+
     - name: Terraform Destroy (Manual Trigger)
       if: github.event_name == 'workflow_dispatch' && github.event.inputs.destroy == 'true'
       run: terraform -chdir=./main destroy -auto-approve
-      
