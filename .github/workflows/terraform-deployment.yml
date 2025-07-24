@@ -70,7 +70,7 @@ jobs:
     - name: Terraform Apply (Manual Trigger)
       if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
       run: |
-        terraform -chdir=./main apply -input=false -out=tfplan \
+        terraform -chdir=./main apply -input=false -auto-approve tfplan \
         -var="token=${{ secrets.YC_TOKEN }}"
 
     - name: Terraform Destroy (Manual Trigger)
