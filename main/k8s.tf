@@ -52,8 +52,8 @@ resource "yandex_compute_instance" "k8s" {
 
 
 locals {
-     ssh_key = fileexists("/home/tiger/.ssh/tagir.pub") ? file("/home/tiger/.ssh/tagir.pub") : var.ssh_public_key
-     ssh_private_key = fileexists("/home/tiger/.ssh/id_rsa") ? file("/home/tiger/.ssh/id_rsa") : var.ssh_private_key
+     ssh_key = fileexists("~/.ssh/tagir.pub") ? file("~/.ssh/tagir.pub") : var.ssh_public_key
+     ssh_private_key = fileexists("~/.ssh/id_rsa") ? file("~/.ssh/id_rsa") : var.ssh_private_key
      subnet_map = {
     "public1" = yandex_vpc_subnet.public1.id
     "public2" = yandex_vpc_subnet.public2.id
