@@ -30,9 +30,9 @@ jobs:
 
     env:
       TOKEN: ${{ secrets.YC_TOKEN }}
-      CLOUD_ID: ${{ secrets.YC_CLOUD_ID }}
-      FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
-      MY_IP: ${{ secrets.YC_MYIP }}
+      #CLOUD_ID: ${{ secrets.YC_CLOUD_ID }}
+      #FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+      #MY_IP: ${{ secrets.YC_MYIP }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
@@ -59,10 +59,7 @@ jobs:
     - name: Terraform Plan
       run: |
         terraform -chdir=./main plan -input=false -out=tfplan \
-        -var="token=${{ secrets.YC_TOKEN }}" \
-        -var="cloud_id=${{ secrets.YC_CLOUD_ID }}" \
-        -var="folder_id=${{ secrets.YC_FOLDER_ID }}" \
-        -var="my_ip=${{ secrets.YC_MYIP }}"
+        -var="token=${{ secrets.YC_TOKEN }}"
        
     - name: Terraform Apply (Automatic Trigger)
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
