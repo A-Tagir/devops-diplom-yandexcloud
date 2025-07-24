@@ -149,7 +149,7 @@ resource "null_resource" "cleanup_admin_conf" {
   connection {
     type        = "ssh"
     user        = var.vm_username
-    private_key = file("/home/tiger/.ssh/id_rsa")
+    private_key = "${local.ssh_private_key}"
     host        = yandex_compute_instance.k8s["0"].network_interface[0].nat_ip_address
   }
 
