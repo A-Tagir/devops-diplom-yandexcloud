@@ -134,7 +134,10 @@ resource "null_resource" "copy_kubeconfig" {
     command = <<-EOT
     if [ -n "$GITHUB_ACTIONS" ]; then
       echo "Running in GitHub Actions - saving to artifacts"
-      scp -o StrictHostKeyChecking=no ${var.vm_username}@${yandex_compute_instance.k8s["0"].network_interface[0].nat_ip_address}:/tmp/admin.conf ./admin.conf
+      mkdir -p ~/.ssh
+      echo "${local.ssh_private_key}" > ~/.ssh/id_rsa
+      chmod 600 ~/.ssh/id_rsa
+      scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${var.vm_username}@${yandex_compute_instance.k8s["0"].network_interface[0].nat_ip_address}:/tmp/admin.conf ./admin.conf
       mkdir -p ./kubeconfig-artifact
       cp ./admin.conf ./kubeconfig-artifact/kubeconfig
       echo "kubeconfig copied to artifact directory"
