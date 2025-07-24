@@ -63,7 +63,7 @@ jobs:
         echo "PLAN_STATUS=$?" >> $GITHUB_ENV
 
     - name: Show Plan Status
-      run: echo "Plan completed with status: ${{ env.PLAN_STATUS }}"
+      run: echo "Plan completed with status ${{ env.PLAN_STATUS }}"
        
     - name: Terraform Apply (Automatic Trigger)
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
