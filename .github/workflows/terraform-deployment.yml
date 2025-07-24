@@ -63,12 +63,14 @@ jobs:
        
     - name: Terraform Apply (Automatic Trigger)
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      run: terraform -chdir=./main apply -input=false tfplan \
+      run: |
+        terraform -chdir=./main apply -input=false tfplan \
         -var="token=${{ secrets.YC_TOKEN }}"
 
     - name: Terraform Apply (Manual Trigger)
       if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
-      run: terraform -chdir=./main apply -input=false tfplan \
+      run: |
+        terraform -chdir=./main apply -input=false tfplan \
         -var="token=${{ secrets.YC_TOKEN }}"
 
     - name: Terraform Destroy (Manual Trigger)
