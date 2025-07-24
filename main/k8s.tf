@@ -78,7 +78,7 @@ resource "null_resource" "kubespray_inventory" {
   provisioner "remote-exec" {
     inline = [
       "cat <<EOF > /home/${var.vm_username}/.ssh/id_rsa",
-      "${file("/home/tiger/.ssh/id_rsa")}",
+      "${local.ssh_private_key}",
       "EOF",
       # Set proper permissions
       "chmod 600 /home/${var.vm_username}/.ssh/id_rsa",
