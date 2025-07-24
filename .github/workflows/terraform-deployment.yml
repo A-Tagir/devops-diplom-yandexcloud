@@ -78,4 +78,3 @@ jobs:
       run: |
         terraform -chdir=./main destroy -input=false -auto-approve \
         -var="token=${{ secrets.YC_TOKEN }}"
-
