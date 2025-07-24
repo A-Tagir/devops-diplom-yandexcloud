@@ -29,10 +29,10 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      YC_TOKEN: ${{ secrets.YC_TOKEN }}
-      TF_VAR_cloud_id: ${{ secrets.YC_CLOUD_ID }}
-      TF_VAR_folder_id: ${{ secrets.YC_FOLDER_ID }}
-      TF_VAR_my_ip: ${{ secrets.YC_FOLDER_ID }}
+      TOKEN: ${{ secrets.YC_TOKEN }}
+      CLOUD_ID: ${{ secrets.YC_CLOUD_ID }}
+      FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+      MY_IP: ${{ secrets.YC_MYIP }}
       TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
       TF_VAR_ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
@@ -46,30 +46,48 @@ jobs:
         terraform_version: "1.8.4"
 
     - name: Terraform Init
-      run: terraform -chdir=./main init
+      run: terraform -chdir=./main init \
+      TOKEN: ${{ secrets.YC_TOKEN }} \
+      CLOUD_ID: ${{ secrets.YC_CLOUD_ID }} \
+      FOLDER_ID: ${{ secrets.YC_FOLDER_ID }} \
+      MY_IP: ${{ secrets.YC_MYIP }}
 
     - name: Terraform Format and Validate
       run: terraform -chdir=./main validate \
-        -var="token=${{ secrets.YC_TOKEN }}"
+      TOKEN: ${{ secrets.YC_TOKEN }} \
+      CLOUD_ID: ${{ secrets.YC_CLOUD_ID }} \
+      FOLDER_ID: ${{ secrets.YC_FOLDER_ID }} \
+      MY_IP: ${{ secrets.YC_MYIP }}
 
     - name: Terraform Plan
       run: |
         terraform -chdir=./main plan -input=false -out=tfplan \
-        -var="token=${{ secrets.YC_TOKEN }}"
+      TOKEN: ${{ secrets.YC_TOKEN }} \
+      CLOUD_ID: ${{ secrets.YC_CLOUD_ID }} \
+      FOLDER_ID: ${{ secrets.YC_FOLDER_ID }} \
+      MY_IP: ${{ secrets.YC_MYIP }}
        
     - name: Terraform Apply (Automatic Trigger)
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      run: terraform -chdir=./main apply -input=false tfplan \
-        -var="token=${{ secrets.YC_TOKEN }}"
+      run: terraform -chdir=./main apply -input=false tfplan\
+      TOKEN: ${{ secrets.YC_TOKEN }} \
+      CLOUD_ID: ${{ secrets.YC_CLOUD_ID }} \
+      FOLDER_ID: ${{ secrets.YC_FOLDER_ID }} \
+      MY_IP: ${{ secrets.YC_MYIP }}
 
     - name: Terraform Apply (Manual Trigger)
       if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
       run: terraform -chdir=./main apply -input=false tfplan \
-        -var="token=${{ secrets.YC_TOKEN }}"
+      TOKEN: ${{ secrets.YC_TOKEN }} \
+      CLOUD_ID: ${{ secrets.YC_CLOUD_ID }} \
+      FOLDER_ID: ${{ secrets.YC_FOLDER_ID }} \
+      MY_IP: ${{ secrets.YC_MYIP }}
 
     - name: Terraform Destroy (Manual Trigger)
       if: github.event_name == 'workflow_dispatch' && github.event.inputs.destroy == 'true'
       run: |
         terraform -chdir=./main destroy -input=false -auto-approve \
-        -var="token=${{ secrets.YC_TOKEN }}"
-        
+      TOKEN: ${{ secrets.YC_TOKEN }} \
+      CLOUD_ID: ${{ secrets.YC_CLOUD_ID }} \
+      FOLDER_ID: ${{ secrets.YC_FOLDER_ID }} \
+      MY_IP: ${{ secrets.YC_MYIP }}
