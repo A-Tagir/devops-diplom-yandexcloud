@@ -46,48 +46,25 @@ jobs:
         terraform_version: "1.8.4"
 
     - name: Terraform Init
-      run: terraform -chdir=./main init \
-      TOKEN: ${{ secrets.YC_TOKEN }} \
-      CLOUD_ID: ${{ secrets.YC_CLOUD_ID }} \
-      FOLDER_ID: ${{ secrets.YC_FOLDER_ID }} \
-      MY_IP: ${{ secrets.YC_MYIP }}
-
+      run: terraform -chdir=./main init 
+      
     - name: Terraform Format and Validate
-      run: terraform -chdir=./main validate \
-      TOKEN: ${{ secrets.YC_TOKEN }} \
-      CLOUD_ID: ${{ secrets.YC_CLOUD_ID }} \
-      FOLDER_ID: ${{ secrets.YC_FOLDER_ID }} \
-      MY_IP: ${{ secrets.YC_MYIP }}
+      run: terraform -chdir=./main validate 
 
     - name: Terraform Plan
       run: |
-        terraform -chdir=./main plan -input=false -out=tfplan \
-      TOKEN: ${{ secrets.YC_TOKEN }} \
-      CLOUD_ID: ${{ secrets.YC_CLOUD_ID }} \
-      FOLDER_ID: ${{ secrets.YC_FOLDER_ID }} \
-      MY_IP: ${{ secrets.YC_MYIP }}
+        terraform -chdir=./main plan -input=false -out=tfplan 
        
     - name: Terraform Apply (Automatic Trigger)
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      run: terraform -chdir=./main apply -input=false tfplan\
-      TOKEN: ${{ secrets.YC_TOKEN }} \
-      CLOUD_ID: ${{ secrets.YC_CLOUD_ID }} \
-      FOLDER_ID: ${{ secrets.YC_FOLDER_ID }} \
-      MY_IP: ${{ secrets.YC_MYIP }}
+      run: terraform -chdir=./main apply -input=false tfplan
 
     - name: Terraform Apply (Manual Trigger)
       if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
-      run: terraform -chdir=./main apply -input=false tfplan \
-      TOKEN: ${{ secrets.YC_TOKEN }} \
-      CLOUD_ID: ${{ secrets.YC_CLOUD_ID }} \
-      FOLDER_ID: ${{ secrets.YC_FOLDER_ID }} \
-      MY_IP: ${{ secrets.YC_MYIP }}
+      run: terraform -chdir=./main apply -input=false tfplan 
 
     - name: Terraform Destroy (Manual Trigger)
       if: github.event_name == 'workflow_dispatch' && github.event.inputs.destroy == 'true'
       run: |
-        terraform -chdir=./main destroy -input=false -auto-approve \
-      TOKEN: ${{ secrets.YC_TOKEN }} \
-      CLOUD_ID: ${{ secrets.YC_CLOUD_ID }} \
-      FOLDER_ID: ${{ secrets.YC_FOLDER_ID }} \
-      MY_IP: ${{ secrets.YC_MYIP }}
+        terraform -chdir=./main destroy -input=false -auto-approve 
+        
