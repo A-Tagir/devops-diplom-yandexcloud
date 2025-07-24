@@ -60,7 +60,7 @@ jobs:
       run: |
         terraform -chdir=./main plan -input=false -out=tfplan \
         -var="token=${{ secrets.YC_TOKEN }}"
-        echo "plan_status=$?" >> $GITHUB_OUTPUT
+        echo "plan_status=$?" >> $GITHUB_STATE
        
     - name: Terraform Apply (Automatic Trigger)
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
