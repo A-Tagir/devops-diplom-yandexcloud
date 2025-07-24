@@ -40,6 +40,7 @@ jobs:
       TF_VAR_my_ip: ${{ secrets.YC_MYIP }}
       TF_VAR_cloud_id: ${{ secrets.YC_CLOUD_ID }}
       TF_VAR_folder_id: ${{ secrets.YC_FOLDER_ID }}
+      TF_VAR_token: ${{ secrets.YC_TOKEN }}
 
     steps:
     - name: Checkout
@@ -71,4 +72,4 @@ jobs:
 
     - name: Terraform Destroy (Manual Trigger)
       if: github.event_name == 'workflow_dispatch' && github.event.inputs.destroy == 'true'
-      run: terraform -chdir=./main destroy -var="token=${{ secrets.YC_TOKEN }}" input=false -auto-approve
+      run: terraform -chdir=./main destroy input=false -auto-approve
