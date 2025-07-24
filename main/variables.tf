@@ -158,3 +158,14 @@ variable "each_vm" {
   ]
 }
 
+variable "ssh_public_key" {
+  description = "SSH public key"
+  type        = string
+  default     = ""
+}
+
+variable "ssh_private_key" {
+  description = "SSH private key"
+  type        = string
+  default     = ""
+}
