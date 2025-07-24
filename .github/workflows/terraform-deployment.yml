@@ -49,22 +49,27 @@ jobs:
       run: terraform -chdir=./main init
 
     - name: Terraform Format and Validate
-      run: terraform -chdir=./main validate
+      run: terraform -chdir=./main validate \
+        -var="token=${{ secrets.YC_TOKEN }}"
 
     - name: Terraform Plan
       run: |
-        terraform -chdir=./main plan -input=false -out=tfplan
+        terraform -chdir=./main plan -input=false -out=tfplan \
+        -var="token=${{ secrets.YC_TOKEN }}"
        
     - name: Terraform Apply (Automatic Trigger)
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      run: terraform -chdir=./main apply -input=false tfplan
+      run: terraform -chdir=./main apply -input=false tfplan \
+        -var="token=${{ secrets.YC_TOKEN }}"
 
     - name: Terraform Apply (Manual Trigger)
       if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
-      run: terraform -chdir=./main apply -input=false tfplan
+      run: terraform -chdir=./main apply -input=false tfplan \
+        -var="token=${{ secrets.YC_TOKEN }}"
 
     - name: Terraform Destroy (Manual Trigger)
       if: github.event_name == 'workflow_dispatch' && github.event.inputs.destroy == 'true'
       run: |
-        terraform -chdir=./main destroy -input=false -auto-approve
+        terraform -chdir=./main destroy -input=false -auto-approve \
+        -var="token=${{ secrets.YC_TOKEN }}"
         
