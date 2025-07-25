@@ -371,8 +371,8 @@ locals {
 * Пушим и проверяем:
 
 ![workflow_disk_volume](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_TFpipline_workflow_disk_volume_k8s.png)
-* Вижу, что это было прохой идеей - параметр disk_volume является unmutable и без пересоздания инстанса не меняеся. Поскольку у меня не 
-  указан lifecycle { ignore_changes = [ disk ]  } то workflow начал пересоздавать кластер полностью.
+* Вижу, что это было прохой идеей - параметр disk_volume является unmutable и без пересоздания инстанса не меняется. Поскольку у меня не 
+  указан lifecycle {  ignore_changes = [boot_disk[0].initialize_params[0].image_id]  } то workflow начал пересоздавать кластер полностью.
   Добавлю этот параметр, для предотвращения пересоздания нод, поскольку операция очень длительная.
 
 * Видим, что workflow создан и работает корректно.
