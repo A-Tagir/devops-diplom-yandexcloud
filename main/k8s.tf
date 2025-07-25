@@ -19,7 +19,11 @@ resource "yandex_compute_instance" "k8s" {
   }
 
   lifecycle {
-    ignore_changes = [boot_disk[0].initialize_params[0].size]  # Игнорировать изменение размера диска
+        ignore_changes = [
+            disk,
+            storage_policy_id,
+            enable_disk_uuid,
+        ]
   }
 
   name = each.value
