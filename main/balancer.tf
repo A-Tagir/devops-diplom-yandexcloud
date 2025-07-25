@@ -84,6 +84,9 @@ resource "yandex_alb_virtual_host" "virtual-host" {
       }
       http_route_action {
         backend_group_id = yandex_alb_backend_group.grafana-backend.id
+        rewrite {
+        path_prefix_rewrite = "/"
+       }
       }
     }
   }
