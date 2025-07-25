@@ -135,7 +135,7 @@ variable "each_vm" {
       vm_name       = "workera"
       cpu           = 2
       ram           = 4
-      disk_volume   = 20
+      disk_volume   = 30
       core_fraction = 20
       preemptible   = true
       nat           = true
@@ -147,7 +147,7 @@ variable "each_vm" {
       vm_name       = "workerb"
       cpu           = 2
       ram           = 4
-      disk_volume   = 20
+      disk_volume   = 30
       core_fraction = 20
       preemptible   = true
       nat           = true
