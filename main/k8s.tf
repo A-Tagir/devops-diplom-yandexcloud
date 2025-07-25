@@ -50,7 +50,7 @@ resource "yandex_compute_instance" "k8s" {
 
 }
 
-
+# Условия проверки наличия локальных ключей и извлечение из переменных при отсутствии.
 locals {
      ssh_key = fileexists("~/.ssh/tagir.pub") ? file("~/.ssh/tagir.pub") : var.ssh_public_key
      ssh_private_key = fileexists("~/.ssh/id_rsa") ? file("~/.ssh/id_rsa") : var.ssh_private_key
