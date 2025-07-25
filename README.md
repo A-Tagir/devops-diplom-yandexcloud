@@ -313,10 +313,78 @@ helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n
 ### Деплой инфраструктуры в terraform pipeline
 
 * Поскольку я на первом этапе не настроил автоматический деплой конфигурации терраформ, то буду делать это сейчас.
+* Первоначальный вариант был рассчитан на локальный запуск, поэтому пришлось сделать изменения для возможности запуска через Github workflow.
+  - был добавлен terraform.tfvars, куда я вынес нечувствительные переменные. А оставшиеся секреты из personal.auto.tfvars были добавлены 
+    в github secrets and variables. Также, добавлен статический ключ: yc iam access-key create --service-account-name  bucket-encrypt-account,
+    который в локальной версии не был необходим (для подключения к бекенд).
+    ![TFpipline_secrets](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_TFpipline_secrets.png)
+
+* Был также доработан основной k8s.tf 
+  - изменен provisioner "local-exec" в котором прямые ссылки на admin.conf заменены на относительные, а также добавлено копирование 
+    admin.conf в github artifacts.
+  - Доступ к порту 22 SSH был разрешен для public интернет, поскольку необходим доступ с серверов github workflow.
+  - Также изменена работа с public/private key:
+```
+locals {
+     ssh_key = fileexists("~/.ssh/tagir.pub") ? file("~/.ssh/tagir.pub") : var.ssh_public_key
+     ssh_private_key = fileexists("~/.ssh/id_rsa") ? file("~/.ssh/id_rsa") : var.ssh_private_key
+     subnet_map = {
+    "public1" = yandex_vpc_subnet.public1.id
+    "public2" = yandex_vpc_subnet.public2.id
+  }
+}
+```
+* конечная версия проекта может работать корректно как локально, так и через github workflow.
+
+* Создал github workflow:
+
+[terraform-deployment.yml](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/.github/workflows/terraform-deployment.yml) 
+
+* workflow включает следующие этапы:
+  - инициализация
+  - валидация и проверка форматирования
+  - создание плана
+  - применение для автоматического запуска
+  - применение для ручного запуска
+  - копирование kubeconfig во временную папку
+  - загрузку kubeconfig в github artifacts
+  - удаление проекта
+
+* Делаю commit в main и проверяю:
+
+![k8s_TFpipline_commit](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_TFpipline_commit_k8s.png)
+
+![workflow_started](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_TFpipline_workflow_started_k8s.png)
+
+* Видим, что все запустилось и ждем окончания процесса:
+
+![workflow_succeed](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_TFpipline_workflow_succeed_k8s.png)
+
+![workflow_full](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_TFpipline_workflow_full_k8s.png)
+
+* Копирую kubeconfig из artefacts в локальный ./kube/config (заменив 127.0.0.1 на public ip мастера) и проверяю:
+
+![workflow_kubectl](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_TFpipline_workflow_kubectl_k8s.png)
+
+* Кластер создался и работает.
+* Внесем изменения в k8s.tf: disk_volume   = 20 > disk_volume   = 30
+* Пушим и проверяем:
+
+![workflow_disk_volume](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_TFpipline_workflow_disk_volume_k8s.png)
+* Вижу, что это было прохой идеей - параметр disk_volume является unmutable и без пересоздания инстанса не меняеся. Поскольку у меня не 
+  указан lifecycle { ignore_changes = [ disk ]  } то workflow начал пересоздавать кластер полностью.
+  Добавлю этот параметр, для предотвращения пересоздания нод, поскольку операция очень длительная.
+
+* Видим, что workflow создан и работает корректно.
+* Теперь нужно выполнить требования "Http доступ на 80 порту к web интерфейсу grafana" и "Http доступ на 80 порту к тестовому приложению".
+* Для этого создадим Ingress. Ingress следует сначала включить в addons.yml (конфиг kubespray). Делаем это в k8s.tf и пересоздаем кластер.
+```
+ingress_nginx_enabled: true
+ingress_nginx_service_type: LoadBalancer
+```
+* Проверяем его наличие:
 
 
-
-1. Если на первом этапе вы не воспользовались [Terraform Cloud](https://app.terraform.io/), то задеплойте и настройте в кластере [atlantis](https://www.runatlantis.io/) для отслеживания изменений инфраструктуры. Альтернативный вариант 3 задания: вместо Terraform Cloud или atlantis настройте на автоматический запуск и применение конфигурации terraform из вашего git-репозитория в выбранной вами CI-CD системе при любом комите в main ветку. Предоставьте скриншоты работы пайплайна из CI/CD системы.
 
 Ожидаемый результат:
 1. Git репозиторий с конфигурационными файлами для настройки Kubernetes.
@@ -325,6 +393,9 @@ helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n
 4. Http доступ на 80 порту к тестовому приложению.
 5. Atlantis или terraform cloud или ci/cd-terraform
 ---
+
+
+
 ### Установка и настройка CI/CD
 
 Осталось настроить ci/cd систему для автоматической сборки docker image и деплоя приложения при изменении кода.
