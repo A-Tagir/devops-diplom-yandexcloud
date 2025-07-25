@@ -107,6 +107,8 @@ resource "null_resource" "kubespray_inventory" {
       "cat <<EOF > /home/${var.vm_username}/kubespray/inventory/mycluster/group_vars/k8s_cluster/addons.yml",
       "ingress_nginx_enabled: true",
       "ingress_nginx_service_type: LoadBalancer",
+      "ingress_nginx_service_nodeport_http: 80",
+      #"ingress_nginx_service_nodeport_https: 443"
       "helm_enabled: false",
       "registry_enabled: false",
       "metrics_server_enabled: false",
