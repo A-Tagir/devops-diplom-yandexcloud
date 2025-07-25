@@ -17,10 +17,50 @@ resource "yandex_lb_target_group" "balancer-group" {
   }
 }
 
-# Явное ожидание готовности целевой группы
-resource "time_sleep" "wait_for_target_group" {
+# Backend Group для Grafana (NodePort 30080)
+resource "yandex_alb_backend_group" "grafana-backend" {
+  name = "grafana-backend"
   depends_on = [yandex_lb_target_group.balancer-group]
-  create_duration = "30s"
+
+  http_backend {
+    name             = "grafana"
+    weight           = 1
+    port             = 30080
+    target_group_ids = [yandex_lb_target_group.balancer-group.id]
+    
+    healthcheck {
+      timeout             = "3s"
+      interval           = "5s"
+      healthy_threshold   = 2
+      unhealthy_threshold = 2
+      http_healthcheck {
+        path = "/api/health"
+      }
+    }
+  }
+}
+
+# Backend Group для DevCats (NodePort 30051)
+resource "yandex_alb_backend_group" "devcats-backend" {
+  name = "devcats-backend"
+  depends_on = [yandex_lb_target_group.balancer-group]
+
+  http_backend {
+    name             = "devcats"
+    weight           = 1
+    port             = 30051
+    target_group_ids = [yandex_lb_target_group.balancer-group.id]
+    
+    healthcheck {
+      timeout             = "3s"
+      interval           = "5s"
+      healthy_threshold   = 2
+      unhealthy_threshold = 2
+      http_healthcheck {
+        path = "/"
+      }
+    }
+  }
 }
 
 
