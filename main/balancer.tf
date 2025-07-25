@@ -13,7 +13,7 @@ resource "yandex_lb_target_group" "balancer-group" {
 }
 
 # Backend Group для Grafana (порт 30080)
-resource "yandex_alb_backend_group" "grafana-backend" {
+resource "yandex_lb_backend_group" "grafana-backend" {
   name = "grafana-backend"
 
   http_backend {
@@ -25,7 +25,7 @@ resource "yandex_alb_backend_group" "grafana-backend" {
 }
 
 # Backend Group для web-app (порт 30051)
-resource "yandex_alb_backend_group" "web-app-backend" {
+resource "yandex_lb_backend_group" "web-app-backend" {
   name = "web-app-backend"
 
   http_backend {
