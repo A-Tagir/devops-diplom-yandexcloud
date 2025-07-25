@@ -21,12 +21,11 @@ resource "yandex_lb_target_group" "balancer-group" {
 resource "yandex_alb_backend_group" "grafana-backend" {
   name = "grafana-backend"
   depends_on = [yandex_lb_target_group.balancer-group]
-
   http_backend {
     name             = "grafana"
     weight           = 1
     port             = 30080
-    target_group_ids = [yandex_lb_target_group.balancer-group.id]
+    target_group_id = yandex_lb_target_group.balancer-group.id
     
     healthcheck {
       timeout             = "3s"
@@ -44,12 +43,11 @@ resource "yandex_alb_backend_group" "grafana-backend" {
 resource "yandex_alb_backend_group" "devcats-backend" {
   name = "devcats-backend"
   depends_on = [yandex_lb_target_group.balancer-group]
-
   http_backend {
     name             = "devcats"
     weight           = 1
     port             = 30051
-    target_group_ids = [yandex_lb_target_group.balancer-group.id]
+    target_group_id = yandex_lb_target_group.balancer-group.id
     
     healthcheck {
       timeout             = "3s"
