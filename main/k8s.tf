@@ -103,21 +103,7 @@ resource "null_resource" "kubespray_inventory" {
       "node2 ansible_host=${yandex_compute_instance.k8s["1"].network_interface[0].ip_address} #ip=${yandex_compute_instance.k8s["1"].network_interface[0].ip_address}",
       "node3 ansible_host=${yandex_compute_instance.k8s["2"].network_interface[0].ip_address} #ip=${yandex_compute_instance.k8s["2"].network_interface[0].ip_address}",
       "EOF",
-      #Добавляем параметры для nginx ingress
-      "cat <<EOF > /home/${var.vm_username}/kubespray/inventory/mycluster/group_vars/k8s_cluster/addons.yml",
-      "ingress_nginx_enabled: true",
-      "ingress_nginx_service_type: LoadBalancer",
-      "ingress_nginx_service_nodeport_http: 80",
-      #"ingress_nginx_service_nodeport_https: 443"
-      "helm_enabled: false",
-      "registry_enabled: false",
-      "metrics_server_enabled: false",
-      "local_path_provisioner_enabled: false",
-      "local_volume_provisioner_enabled: false",
-      "gateway_api_enabled: false",
-      "node_feature_discovery_enabled: false",
-      "EOF",
-
+  
       # Ждем завершения копирования
       "sync",
       # Проверяем существование файла (для отладки)
