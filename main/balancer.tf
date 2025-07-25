@@ -41,13 +41,13 @@ resource "yandex_alb_virtual_host" "virtual-host" {
   route {
     name = "grafana-route"
     http_route {
-      http_route_action {
-        backend_group_id = yandex_alb_backend_group.grafana-backend.id
-      }
-      match {
+      http_match {
         path {
           prefix = "/monitor"
         }
+      }
+      http_route_action {
+        backend_group_id = yandex_alb_backend_group.grafana-backend.id
       }
     }
   }
@@ -56,13 +56,13 @@ resource "yandex_alb_virtual_host" "virtual-host" {
   route {
     name = "web-app-route"
     http_route {
-      http_route_action {
-        backend_group_id = yandex_alb_backend_group.web-app-backend.id
-      }
-      match {
+      http_match {
         path {
           prefix = "/"
         }
+      }
+      http_route_action {
+        backend_group_id = yandex_alb_backend_group.web-app-backend.id
       }
     }
   }
