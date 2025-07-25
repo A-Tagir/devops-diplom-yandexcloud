@@ -6,7 +6,7 @@ resource "yandex_alb_http_router" "router" {
 
 # Target Group для всех worker-узлов
 resource "yandex_lb_target_group" "balancer-group" {
-  name       = "k8s-target-group"
+  name       = "balancer-group"
   depends_on = [yandex_compute_instance.k8s]
 
   dynamic "target" {
@@ -20,13 +20,13 @@ resource "yandex_lb_target_group" "balancer-group" {
 # Backend Group для Grafana (NodePort 30080)
 resource "yandex_alb_backend_group" "grafana-backend" {
   name = "grafana-backend"
-  depends_on = [yandex_lb_target_group.k8s-target-group]
+  depends_on = [yandex_lb_target_group.balancer-group]
 
   http_backend {
     name             = "grafana"
     weight           = 1
     port             = 30080
-    target_group_ids = [yandex_lb_target_group.k8s-target-group.id]
+    target_group_ids = [yandex_lb_target_group.balancer-group.id]
     
     healthcheck {
       timeout             = "3s"
