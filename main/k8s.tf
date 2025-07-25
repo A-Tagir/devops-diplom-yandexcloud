@@ -18,6 +18,10 @@ resource "yandex_compute_instance" "k8s" {
   2 = "workerb"
   }
 
+  lifecycle {
+    ignore_changes = [boot_disk[0].initialize_params[0].size]  # Игнорировать изменение размера диска
+  }
+
   name = each.value
   platform_id  = var.vm_platform_id
   zone = var.each_vm[each.key].zone
