@@ -1,3 +1,8 @@
+# HTTP Router для маршрутизации (created first as it has no dependencies)
+resource "yandex_alb_http_router" "router" {
+  name = "k8s-router"
+}
+
 # Target Group для web-app (порт 30051)
 resource "yandex_lb_target_group" "web-app-group" {
   name       = "web-app-group"
@@ -26,9 +31,30 @@ resource "yandex_lb_target_group" "grafana-group" {
   }
 }
 
-# HTTP Router для маршрутизации
-resource "yandex_alb_http_router" "router" {
-  name = "k8s-router"
+# Backend Group для web-app (порт 30051)
+resource "yandex_alb_backend_group" "web-app-backend" {
+  name = "web-app-backend"
+  depends_on = [yandex_lb_target_group.web-app-group]
+
+  http_backend {
+    name             = "web-app-backend"
+    weight           = 1
+    port             = 30051
+    target_group_ids = [yandex_lb_target_group.web-app-group.id]
+  }
+}
+
+# Backend Group для Grafana (порт 30050)
+resource "yandex_alb_backend_group" "grafana-backend" {
+  name = "grafana-backend"
+  depends_on = [yandex_lb_target_group.grafana-group]
+
+  http_backend {
+    name             = "grafana-backend"
+    weight           = 1
+    port             = 30080
+    target_group_ids = [yandex_lb_target_group.grafana-group.id]
+  }
 }
 
 # Виртуальный хост с правилами маршрутизации
@@ -36,6 +62,10 @@ resource "yandex_alb_virtual_host" "virtual-host" {
   name           = "k8s-virtual-host"
   http_router_id = yandex_alb_http_router.router.id
   authority      = ["*"] # Принимаем любой домен
+  depends_on = [
+    yandex_alb_backend_group.web-app-backend,
+    yandex_alb_backend_group.grafana-backend
+  ]
 
   # Маршрут для Grafana (/monitor)
   route {
@@ -68,30 +98,6 @@ resource "yandex_alb_virtual_host" "virtual-host" {
   }
 }
 
-# Backend Group для Grafana (порт 30050)
-resource "yandex_alb_backend_group" "grafana-backend" {
-  name = "grafana-backend"
-
-  http_backend {
-    name             = "grafana-backend"
-    weight           = 1
-    port             = 30080
-    target_group_ids = [yandex_lb_target_group.grafana-group.id]
-  }
-}
-
-# Backend Group для web-app (порт 30051)
-resource "yandex_alb_backend_group" "web-app-backend" {
-  name = "web-app-backend"
-
-  http_backend {
-    name             = "web-app-backend"
-    weight           = 1
-    port             = 30051
-    target_group_ids = [yandex_lb_target_group.web-app-group.id]
-  }
-}
-
 # Application Load Balancer
 resource "yandex_alb_load_balancer" "alb" {
   name               = "k8s-alb"
@@ -121,9 +127,6 @@ resource "yandex_alb_load_balancer" "alb" {
   }
 
   depends_on = [
-    yandex_lb_target_group.web-app-group,
-    yandex_lb_target_group.grafana-group,
-    yandex_alb_backend_group.web-app-backend,
-    yandex_alb_backend_group.grafana-backend
+    yandex_alb_virtual_host.virtual-host
   ]
 }
