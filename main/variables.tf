@@ -123,7 +123,7 @@ variable "each_vm" {
       vm_name       = "master"
       cpu           = 2
       ram           = 4
-      disk_volume   = 20
+      disk_volume   = 30
       core_fraction = 20
       preemptible   = false
       nat           = true
