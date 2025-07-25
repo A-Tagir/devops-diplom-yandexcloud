@@ -20,7 +20,7 @@ resource "yandex_lb_target_group" "balancer-group" {
 # Явное ожидание готовности целевой группы
 resource "time_sleep" "wait_for_target_group" {
   depends_on = [yandex_lb_target_group.balancer-group]
-  create_duration = "30s"
+  create_duration = "60s"
 }
 
 # Backend Group для Grafana (NodePort 30080)
