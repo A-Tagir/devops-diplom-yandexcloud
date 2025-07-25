@@ -245,3 +245,8 @@ output "node_private_ip" {
           ]
   description = "node ip"
 }
+
+output "alb_external_ip" {
+  value       = try(yandex_alb_load_balancer.alb.listener[0].endpoint[0].address[0].external_ipv4_address[0].address, "ALB not created yet")
+  description = "External IP address of the Application Load Balancer"
+}
