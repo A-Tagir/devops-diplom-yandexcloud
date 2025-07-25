@@ -9,7 +9,7 @@ resource "yandex_lb_target_group" "balancer-group" {
   depends_on = [yandex_compute_instance.k8s]
 
   dynamic "target" {
-    for_each = { for k, v in yandex_compute_instance.k8s : k => v if k != "0" } # Исключаем master
+    for_each = { for k, v in yandex_compute_instance.k8s : k => v if k != "0" }
     content {
       subnet_id = target.value.network_interface.0.subnet_id
       address   = target.value.network_interface.0.ip_address
@@ -91,9 +91,6 @@ resource "yandex_alb_virtual_host" "virtual-host" {
       }
       http_route_action {
         backend_group_id = yandex_alb_backend_group.grafana-backend.id
-        rewrite {
-          prefix = "/"
-        }
       }
     }
   }
