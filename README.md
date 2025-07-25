@@ -377,24 +377,48 @@ locals {
 
 * Видим, что workflow создан и работает корректно.
 * Теперь нужно выполнить требования "Http доступ на 80 порту к web интерфейсу grafana" и "Http доступ на 80 порту к тестовому приложению".
-* Для этого создадим Ingress. Ingress следует сначала включить в addons.yml (конфиг kubespray). Делаем это в k8s.tf и пересоздаем кластер.
-```
-ingress_nginx_enabled: true
-ingress_nginx_service_type: LoadBalancer
-```
-* Проверяем его наличие:
+* Это можно сделать создав yandex applicaton balancer. Он будет перенаправлять запросы напрямую в группу приложения
+  или в группу графаны, если указан путь /monitor
+* Создаю конфигурацию для балансер:
 
+[balancer.tf](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/main/balancer.tf)
 
+* Также в k8s.tf добавлены правила группы безопасности, разрешающие доступ для адресов yandex health-check.
+* Кроме того в настройках графаны добавляем правила, которые позволяют работать через префикс /monitor :
+```
+ grafana.ini:
+    server:
+      domain: ""
+      root_url: "http:///monitor"
+      serve_from_sub_path: true
+```
+* Применяем конфигурацию:
+
+![balancer_created](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_TFpipline_balancer_created.png)
+
+* забыл добавить output для IP балансер, пушаем и смотрим (применяется автоматом):
+
+![balancer_ip_output](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_TFpipline_balancer_ip_output.png)
+
+* Смотрим в консоли яндекс:
+
+![balancer_console](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_TFpipline_balancer_console.png)
+
+* Теперь проверяем работу:
+
+![balancer_web](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_TFpipline_balancer_web.png)
+
+![balancer_monitor](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_TFpipline_balancer_monitor.png)
+
+* Как видим, все работает.
 
 Ожидаемый результат:
-1. Git репозиторий с конфигурационными файлами для настройки Kubernetes.
-2. Http доступ на 80 порту к web интерфейсу grafana.
-3. Дашборды в grafana отображающие состояние Kubernetes кластера.
-4. Http доступ на 80 порту к тестовому приложению.
-5. Atlantis или terraform cloud или ci/cd-terraform
+1. Git репозиторий с конфигурационными файлами для настройки Kubernetes: [main](https://github.com/A-Tagir/devops-diplom-yandexcloud/tree/main/main)
+2. Http доступ на 80 порту к web интерфейсу grafana. - Есть
+3. Дашборды в grafana отображающие состояние Kubernetes кластера - Есть
+4. Http доступ на 80 порту к тестовому приложению - Есть
+5. Atlantis или terraform cloud или ci/cd-terraform - Github Workflow.
 ---
-
-
 
 ### Установка и настройка CI/CD
 
