@@ -113,7 +113,6 @@ resource "null_resource" "kubespray_inventory" {
       "local_path_provisioner_enabled: false",
       "local_volume_provisioner_enabled: false",
       "gateway_api_enabled: false",
-      "ingress_nginx_enabled: false",
       "node_feature_discovery_enabled: false",
       "EOF",
 
