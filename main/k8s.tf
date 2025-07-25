@@ -188,6 +188,20 @@ resource "yandex_vpc_security_group" "k8s" {
   }
 
   ingress {
+    protocol       = "TCP"
+    port           = 30080
+    v4_cidr_blocks = ["198.18.235.0/24", "198.18.248.0/24"] # Диапазоны IP для health checks Yandex ALB
+    description    = "Allow Grafana health checks from ALB"
+  }
+
+  ingress {
+    protocol       = "TCP"
+    port           = 30051
+    v4_cidr_blocks = ["198.18.235.0/24", "198.18.248.0/24"]
+    description    = "Allow DevCats health checks from ALB"
+  }
+
+  ingress {
     protocol       = "ANY"
     v4_cidr_blocks = [ "10.0.20.0/24", "10.0.21.0/24" ]
   }
