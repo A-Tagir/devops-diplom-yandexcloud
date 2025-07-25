@@ -18,12 +18,8 @@ resource "yandex_compute_instance" "k8s" {
   2 = "workerb"
   }
 
-  lifecycle {
-        ignore_changes = [
-            disk,
-            storage_policy_id,
-            enable_disk_uuid,
-        ]
+ lifecycle {
+    ignore_changes = [boot_disk[0].initialize_params[0].image_id]
   }
 
   name = each.value
