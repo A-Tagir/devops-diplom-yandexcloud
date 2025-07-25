@@ -26,7 +26,7 @@ resource "time_sleep" "wait_for_target_group" {
 # Backend Group для Grafana (NodePort 30080)
 resource "yandex_alb_backend_group" "grafana-backend" {
   name = "grafana-backend"
-  depends_on = [time_sleep.wait_for_target_group]
+  depends_on = [yandex_lb_target_group.balancer-group]
 
   http_backend {
     name             = "grafana"
@@ -49,7 +49,7 @@ resource "yandex_alb_backend_group" "grafana-backend" {
 # Backend Group для DevCats (NodePort 30051)
 resource "yandex_alb_backend_group" "devcats-backend" {
   name = "devcats-backend"
-  depends_on = [time_sleep.wait_for_target_group]
+  depends_on = [yandex_lb_target_group.balancer-group]
 
   http_backend {
     name             = "devcats"
