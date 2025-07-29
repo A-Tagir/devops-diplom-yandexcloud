@@ -479,14 +479,64 @@ To https://github.com/A-Tagir/devops-diplom-application.git
 * Видим, что все работает корректно.
   
 * Забыл про поддержку тегов. Доделываю.
-* 
+* Добавляю поддержку тегов в workflow. Добавляется версионный тег, соответствует версии, указанной в Git и тег latest.
 
+[image-deploy.yml](https://github.com/A-Tagir/devops-diplom-application/blob/main/.github/workflows/image-deploy.yml)
+
+* Проверяю:
+```
+ git commit data/index.html -m 'version 1.2.1
+[main 36f66e6] version 1.2.1
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+ tiger@VM1:~/DiplomaApp$ git tag v1.2.1
+tiger@VM1:~/DiplomaApp$ git push origin v1.2.1
+Enumerating objects: 7, done.
+Counting objects: 100% (7/7), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (4/4), 389 bytes | 389.00 KiB/s, done.
+Total 4 (delta 2), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To https://github.com/A-Tagir/devops-diplom-application.git
+ * [new tag]         v1.2.1 -> v1.2.1
+```
+* Смотрим dockerhub и видим, что появились теги версии и latest:
+
+![dockerhub_tags](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_CICD_dockerhub_tags.png)
+
+* Приложение обновилось:
+
+![version1_2_1](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_CICD_version1_2_1.png)
+
+* CICD настроен согласно заданию.
 
 Ожидаемый результат:
 
-1. Интерфейс ci/cd сервиса доступен по http.
-2. При любом коммите в репозиторие с тестовым приложением происходит сборка и отправка в регистр Docker образа.
-3. При создании тега (например, v1.0.0) происходит сборка и отправка с соответствующим label в регистри, а также деплой соответствующего Docker образа в кластер Kubernetes.
-
+1. Интерфейс ci/cd сервиса доступен по http. - есть (https://github.com/A-Tagir/devops-diplom-application/actions)
+2. При любом коммите в репозиторие с тестовым приложением происходит сборка и отправка в регистр Docker образа. - Выполнено.
+3. При создании тега (например, v1.0.0) происходит сборка и отправка с соответствующим label в регистри, а также деплой соответствующего Docker образа в кластер Kubernetes. Выполнено.
 ---
 
+### Результаты проекта:
+
+* Репозиторий создания бекенд для проекта. Он был создан в начале работы с проектом и не удалялся (FreeTier)
+  
+  [backend](https://github.com/A-Tagir/devops-diplom-yandexcloud/tree/main/backend)
+
+* Репозиторий проекта основной. Он разворачивает всю инфраструктуру k8s за 25 минут. Основное время занимает создание кластера с помощью kubespray.
+  Каждый раз перед началом работы я разворачивал проект, а после окончания работы над проектом - удалял.
+
+[main](https://github.com/A-Tagir/devops-diplom-yandexcloud/tree/main/main)
+
+* Terraform pipeline (https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/.github/workflows/terraform-deployment.yml)
+
+* Репозиторий приложения:
+
+[devops-diplom-application](https://github.com/A-Tagir/devops-diplom-application)
+
+* Приложение доступно на 80 порту по ссылке http://158.160.191.123/
+* Мониторинг доступен на 80 порту по ссылке http://158.160.191.123/monitor/dashboards
+
+Логин: admin  Пароль: MySecurePassword123
+
+Внимание! Для экономии гранта, я удалю проект из облака. Для проверки я готов его развернуть, нужно только согласовать время.
