@@ -412,7 +412,7 @@ locals {
 ![balancer_monitor](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_TFpipline_balancer_monitor.png)
 
 * Как видим, все работает.
-* Добавил небольшой скрипт, который запускаю после окончания работы Workflow, чтобы запустить приложение и монитринг:
+* Добавил небольшой скрипт, который запускаю после окончания работы Workflow, чтобы запустить приложение и мониторинг:
 
 [apply.sh](https://github.com/A-Tagir/devops-diplom-application/blob/main/apply.sh)
 
@@ -421,7 +421,7 @@ locals {
 2. Http доступ на 80 порту к web интерфейсу grafana. - Есть
 3. Дашборды в grafana отображающие состояние Kubernetes кластера - Есть
 4. Http доступ на 80 порту к тестовому приложению - Есть
-5. Atlantis или terraform cloud или ci/cd-terraform - Github Workflow.
+5. Atlantis или terraform cloud или ci/cd-terraform - Github Actions.
 ---
 
 ### Установка и настройка CI/CD
@@ -433,12 +433,12 @@ locals {
 1. Автоматическая сборка docker образа при коммите в репозиторий с тестовым приложением.
 2. Автоматический деплой нового docker образа.
 
-* Буду использовать GitHub Workflow, поскольку он уже используеся для terraform pipeline.
+* Буду использовать GitHub Actions, поскольку он уже используеся для terraform pipeline.
 * Создаю новый workflow:
 
 [image-deploy.yml](https://github.com/A-Tagir/devops-diplom-application/blob/main/.github/workflows/image-deploy.yml)
 
-* Здесь, при добавлении kube_config в GitHub secrets необходимо закодировать конифгурация в base64:
+* Здесь, при добавлении kube_config в GitHub secrets необходимо закодировать конифгурацию в base64:
 ```
 tiger@VM1:~/.kube$ base64 -w 0 ~/.kube/config
 ```
@@ -449,6 +449,8 @@ tiger@VM1:~/.kube$ base64 -w 0 ~/.kube/config
   - создание среды для запуска kubectl
   - деплой собранного образа в кластер
   - проверка состояния деплоя
+* В кластере интерфейс кубернетес на порту 6443 был открыт только для IP рабочей станции. Открываем для всех, поскольку
+  IP адреса серверов GitHub Actions не постоянные и могут меняться.
 * Проверяем. Правим текст в файле index.html: "Cats save the world version 1.1" на "Cats save the world version 1.2"
 * Пушим в git
 ```
