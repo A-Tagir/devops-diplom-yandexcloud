@@ -323,7 +323,7 @@ helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n
 * Был также доработан основной k8s.tf 
   - изменен provisioner "local-exec" в котором прямые ссылки на admin.conf заменены на относительные, а также добавлено копирование 
     admin.conf в github artifacts.
-  - Доступ к порту 22 SSH был разрешен для public интернет, поскольку необходим доступ с серверов github workflow.
+  - Доступ к порту 22 SSH был разрешен для public интернет, поскольку необходим доступ с серверов Github Actions.
   - Также изменена работа с public/private key:
 ```
 locals {
@@ -433,16 +433,16 @@ locals {
 1. Автоматическая сборка docker образа при коммите в репозиторий с тестовым приложением.
 2. Автоматический деплой нового docker образа.
 
-* Буду использовать GitHub Actions, поскольку он уже используеся для terraform pipeline.
+* Буду использовать GitHub Actions, поскольку он уже используется для terraform pipeline.
 * Создаю новый workflow:
 
 [image-deploy.yml](https://github.com/A-Tagir/devops-diplom-application/blob/main/.github/workflows/image-deploy.yml)
 
-* Здесь, при добавлении kube_config в GitHub secrets необходимо закодировать конифгурацию в base64:
+* Здесь, при добавлении kube_config в GitHub secrets необходимо закодировать конфигурацию в base64:
 ```
 tiger@VM1:~/.kube$ base64 -w 0 ~/.kube/config
 ```
-* создаем отдельный token для доступа в dockerhub и также добавляем в в GitHub secrets.
+* создаем отдельный token для доступа в dockerhub и также добавляем в GitHub secrets.
 * Workflow состоит из следующих этапов:
   - авторизация в докерхаб
   - сборка образа и загрузка в докерхаб
@@ -526,13 +526,13 @@ To https://github.com/A-Tagir/devops-diplom-application.git
 * Репозиторий проекта основной. Он разворачивает всю инфраструктуру k8s за 25 минут. Основное время занимает создание кластера с помощью kubespray.
   Каждый раз перед началом работы я разворачивал проект, а после окончания работы над проектом - удалял.
 
-[main](https://github.com/A-Tagir/devops-diplom-yandexcloud/tree/main/main)
+  [main](https://github.com/A-Tagir/devops-diplom-yandexcloud/tree/main/main)
 
 * Terraform pipeline (https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/.github/workflows/terraform-deployment.yml)
 
 * Репозиторий приложения:
 
-[devops-diplom-application](https://github.com/A-Tagir/devops-diplom-application)
+  [devops-diplom-application](https://github.com/A-Tagir/devops-diplom-application)
 
 * Приложение доступно на 80 порту по ссылке http://158.160.191.123/
 * Мониторинг доступен на 80 порту по ссылке http://158.160.191.123/monitor/dashboards
