@@ -13,7 +13,8 @@
 ---
 ## Этапы выполнения:
 
-* Работа выполняется на виртуальной машине  Ubuntu 22.04.5 LTS созданной на рабочей станции Windows 10 Pro в среде Hyper-V.
+* Рабочая среда организована на виртуальной машине  Ubuntu 22.04.5 LTS созданной на рабочей станции Windows 10 Pro в среде Hyper-V.
+* Проект выполняется в Yandex Cloud.
 * Версии ПО: Terraform v1.8.4, Python 3.10.12, kubectl Version: v1.32.3, Docker version 28.0.1, Yandex Cloud CLI 0.152.0,
   git version 2.34.1,  helm Version:v3.17.3, TFLint version 0.58.0
 
@@ -411,6 +412,9 @@ locals {
 ![balancer_monitor](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_TFpipline_balancer_monitor.png)
 
 * Как видим, все работает.
+* Добавил небольшой скрипт, который запускаю после окончания работы Workflow, чтобы запустить приложение и монитринг:
+
+[apply.sh](https://github.com/A-Tagir/devops-diplom-application/blob/main/apply.sh)
 
 Ожидаемый результат:
 1. Git репозиторий с конфигурационными файлами для настройки Kubernetes: [main](https://github.com/A-Tagir/devops-diplom-yandexcloud/tree/main/main)
@@ -429,7 +433,52 @@ locals {
 1. Автоматическая сборка docker образа при коммите в репозиторий с тестовым приложением.
 2. Автоматический деплой нового docker образа.
 
-Можно использовать [teamcity](https://www.jetbrains.com/ru-ru/teamcity/), [jenkins](https://www.jenkins.io/), [GitLab CI](https://about.gitlab.com/stages-devops-lifecycle/continuous-integration/) или GitHub Actions.
+* Буду использовать GitHub Workflow, поскольку он уже используеся для terraform pipeline.
+* Создаю новый workflow:
+
+[image-deploy.yml](https://github.com/A-Tagir/devops-diplom-application/blob/main/.github/workflows/image-deploy.yml)
+
+* Здесь, при добавлении kube_config в GitHub secrets необходимо закодировать конифгурация в base64:
+```
+tiger@VM1:~/.kube$ base64 -w 0 ~/.kube/config
+```
+* создаем отдельный token для доступа в dockerhub и также добавляем в в GitHub secrets.
+* Workflow состоит из следующих этапов:
+  - авторизация в докерхаб
+  - сборка образа и загрузка в докерхаб
+  - создание среды для запуска kubectl
+  - деплой собранного образа в кластер
+  - проверка состояния деплоя
+* Проверяем. Правим текст в файле index.html: "Cats save the world version 1.1" на "Cats save the world version 1.2"
+* Пушим в git
+```
+tiger@VM1:~/DiplomaApp/data$ git commit index.html -m 'version 1.2'
+[main 15bc591] version 1.2
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+tiger@VM1:~/DiplomaApp/data$ git push origin main
+Enumerating objects: 7, done.
+Counting objects: 100% (7/7), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (4/4), 386 bytes | 386.00 KiB/s, done.
+Total 4 (delta 2), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To https://github.com/A-Tagir/devops-diplom-application.git
+   6ac460a..15bc591  main -> main
+```
+* Смотрим в workflow. Видим, что все выполнилось, появились новые реплики приложения, а старые удалились:
+
+![workflow_start](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_CICD_workflow_start.png)
+
+![workflow_finished](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_CICD_workflow_finished.png)
+
+![version1_2](https://github.com/A-Tagir/devops-diplom-yandexcloud/blob/main/Diploma_k8s_CICD_version1_2.png)
+
+* Видим, что все работает корректно.
+  
+* Забыл про поддержку тегов. Доделываю.
+* 
+
 
 Ожидаемый результат:
 
